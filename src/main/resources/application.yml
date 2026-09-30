@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/PIuva
+    username: postgres
+    password: Vinici@s10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    thingspeak:
+      channel-id: SEU_CHANNEL_ID
+      read-api-key: SUA_READ_API_KEY
+      poll-interval-ms: 30000
+
+    jwt:
+      secret: troque-esta-chave-por-uma-bem-longa-e-secreta-com-pelo-menos-32-caracteres
+      expiration-ms: 86400000
+
+server:
+  port: 8080
