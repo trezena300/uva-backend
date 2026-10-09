@@ -27,4 +27,8 @@ public class UsuarioCadastroDTO {
 
     @NotNull(message = "O perfil é obrigatório")
     private PerfilUsuario perfil;
+
+    private String telefone;
+    private String empresa;
+    private String localizacao;
 }

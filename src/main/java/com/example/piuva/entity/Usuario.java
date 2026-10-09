@@ -20,6 +20,15 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(length = 150)
+    private String empresa;
+
+    @Column(length = 150)
+    private String localizacao;
+
     @Column(nullable = false, length = 150)
     private String nome;
 
