@@ -37,12 +37,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Rotas públicas: só o login e a documentação
                         .requestMatchers(
                                 "/api/usuarios/login",
-                                "/api/usuarios/cadastro",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        // Cadastro de novos usuários: somente ADMINISTRADOR logado
+                        .requestMatchers("/api/usuarios/cadastro").hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
