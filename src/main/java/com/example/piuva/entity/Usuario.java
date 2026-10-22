@@ -45,6 +45,10 @@ public class Usuario {
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
 
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean ativo = true;
+
     @PrePersist
     public void prePersist() {
         this.dataCriacao = LocalDateTime.now();

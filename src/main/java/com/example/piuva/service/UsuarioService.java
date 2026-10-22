@@ -4,13 +4,17 @@ import com.example.piuva.dto.AuthResponseDTO;
 import com.example.piuva.dto.LoginDTO;
 import com.example.piuva.dto.UsuarioCadastroDTO;
 import com.example.piuva.dto.UsuarioDTO;
+import com.example.piuva.dto.UsuarioListaDTO;
 import com.example.piuva.entity.Usuario;
 import com.example.piuva.exception.ResourceNotFoundException;
 import com.example.piuva.repository.UsuarioRepository;
 import com.example.piuva.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,10 @@ public class UsuarioService {
             throw new IllegalArgumentException("E-mail ou senha inválidos");
         }
 
+        if (!usuario.isAtivo()) {
+            throw new IllegalArgumentException("Usuário inativo. Fale com o administrador.");
+        }
+
         String token = jwtUtil.gerarToken(usuario.getEmail());
 
         return AuthResponseDTO.builder()
@@ -78,6 +86,25 @@ public class UsuarioService {
         return paraDTO(salvo);
     }
 
+    public List<UsuarioListaDTO> listar() {
+        return usuarioRepository.findAll(Sort.by("nome"))
+                .stream()
+                .map(this::paraListaDTO)
+                .toList();
+    }
+
+    public UsuarioListaDTO alterarStatus(Long id, boolean ativo, String emailLogado) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
+
+        if (!ativo && usuario.getEmail().equalsIgnoreCase(emailLogado)) {
+            throw new IllegalArgumentException("Você não pode desativar o seu próprio usuário");
+        }
+
+        usuario.setAtivo(ativo);
+        return paraListaDTO(usuarioRepository.save(usuario));
+    }
+
     private UsuarioDTO paraDTO(Usuario usuario) {
         return UsuarioDTO.builder()
                 .nome(usuario.getNome())
@@ -86,6 +113,16 @@ public class UsuarioService {
                 .telefone(usuario.getTelefone())
                 .empresa(usuario.getEmpresa())
                 .localizacao(usuario.getLocalizacao())
+                .build();
+    }
+
+    private UsuarioListaDTO paraListaDTO(Usuario usuario) {
+        return UsuarioListaDTO.builder()
+                .id(usuario.getId())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .perfil(usuario.getPerfil().name())
+                .ativo(usuario.isAtivo())
                 .build();
     }
 }

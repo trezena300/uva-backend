@@ -10,6 +10,7 @@ import com.example.piuva.util.TemperatureUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,13 @@ public class AlertaService {
 
     public List<AlertaDTO> listarNaoLidos() {
         return alertaRepository.findByLidoFalseOrderByDataHoraDesc()
+                .stream()
+                .map(this::paraDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<AlertaDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return alertaRepository.findByDataHoraBetweenOrderByDataHoraDesc(inicio, fim)
                 .stream()
                 .map(this::paraDTO)
                 .collect(Collectors.toList());

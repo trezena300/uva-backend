@@ -1,9 +1,11 @@
 package com.example.piuva.controller;
 
+import com.example.piuva.dto.AlterarStatusDTO;
 import com.example.piuva.dto.AuthResponseDTO;
 import com.example.piuva.dto.LoginDTO;
 import com.example.piuva.dto.UsuarioCadastroDTO;
 import com.example.piuva.dto.UsuarioDTO;
+import com.example.piuva.dto.UsuarioListaDTO;
 import com.example.piuva.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -28,6 +32,18 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginDTO dto) {
         return ResponseEntity.ok(usuarioService.login(dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UsuarioListaDTO>> listar() {
+        return ResponseEntity.ok(usuarioService.listar());
+    }
+
+    @PutMapping("/{id}/ativo")
+    public ResponseEntity<UsuarioListaDTO> alterarStatus(@PathVariable Long id,
+                                                         @Valid @RequestBody AlterarStatusDTO dto,
+                                                         Authentication authentication) {
+        return ResponseEntity.ok(usuarioService.alterarStatus(id, dto.getAtivo(), authentication.getName()));
     }
 
     @GetMapping("/me")
